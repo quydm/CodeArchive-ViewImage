@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>View Larger Image</title>
+		<style type="text/css" >
+			body img{width:150px;height:140px;cursor:pointer;}
+			#viewLargerImage{position:absolute;top:0;background:#000;text-align:center;width:99%;}
+			#mainFrame{position:relative;}
+			#viewLargerImage #currentImage{border:5px solid #c0c0c0;margin-top:5px;}
+			#viewLargerImage #next{position:absolute;top:30px;right:0;}
+			#viewLargerImage #prev{position:absolute;top:20px;left:0;}
+			#viewLargerImage a{color:#fff;text-decoration:none;}
+		</style>
+		<script type="text/javascript">
+			// Tạo div có id là viewLargerImage
+			document.write("<div id=\"viewLargerImage\" ></div>");
+			// Tạo mảng dùng để chứa tất cả hình ảnh có trên trang
+			images = new Array();
+			// Biến này dùng để lưu ảnh hiện tại đang xem
+			i = 0;
+			
+			/**
+			*	Hiển thị ảnh to hơn
+			*/
+			function showImage(source){
+				// Lưu lại hình ảnh hiện tại đang xem
+				for(var j = 0; j < images.length; j++){
+					if(images[j] == source){
+						i = j;
+						break;
+					}
+				}
+				
+				// Lấy div có id là viewLargerImage
+				var obj = document.getElementById('viewLargerImage');
+				// Thêm các phần tử vào biến tạm thời html
+				var html = "<div id=\"mainFrame\" >";
+				html += "<div id=\"prev\" ><a href=\"#\" onclick=\"prevImage()\" >Previous</a></div>";
+				html += "<img onclick=\"hideImage()\" alt=\"Larger Image\" id=\"currentImage\" src=\"" + source + "\" />";
+				html += "<div id=\"next\" ><a href=\"#\" onclick=\"nextImage()\" >Next</a></div></div>";
+				// Thêm các phần tử vào div viewLargerImage
+				obj.innerHTML = html;
+				if(i == (images.length - 1)){
+					document.getElementById('next').style.display = "none";
+				}else if(i == 0){
+					document.getElementById('prev').style.display = "none";
+				}
+				
+				// Lấy ảnh hiện tại đang hiển thị
+				var img = document.getElementById("currentImage");
+				// Tạo mới một đối tượng Image và gán src cho đối tượng mới này
+				var newImg = new Image();
+				newImg.src = img.getAttribute('src');
+				// Lấy chiều cao và chiều rộng của ảnh đang hiển thị
+				var height = newImg.height/2;
+				var width = newImg.width/2;
+				// Gán chiều cao và chiều rộng cho hình ảnh bằng một nửa chiều cao và chiều rộng thực tế
+				img.style.width = width + "px";
+				img.style.height = height + "px";
+				if(screen.height < height){
+					obj.style.height = height + 20 + "px";
+				}else{
+					obj.style.height = screen.height + "px";
+				}
+				var mainFrame = document.getElementById('mainFrame');
+				mainFrame.style.width = width + 200 + "px";
+				mainFrame.style.left = (screen.width - mainFrame.offsetWidth)/2 + "px";
+				obj.style.visibility = "visible";
+			}
+			
+			/**
+			*	Tắt cửa sổ hiển thị ảnh to
+			*/
+			function hideImage(){
+				var obj = document.getElementById("viewLargerImage");
+				obj.style.visibility = "hidden";
+			}
+			
+			/**
+			*	Hiển thị ảnh tiếp theo
+			*/
+			function nextImage(){
+				if(i < images.length - 1){
+					i = i + 1;
+				}
+				showImage(images[i]);
+			}
+			
+			/**
+			*	Hiển thị trước đó
+			*/
+			function prevImage(){
+				if(i > 0){
+					i = i - 1;
+				}
+				showImage(images[i]);
+			}
+			
+			/**
+			*	Lấy tên của ảnh
+			*/
+			function getImageName(source){
+				source = source + "";
+				var i = source.lastIndexOf('/') + 1;
+				source = source.substr(i, (source.length - i));
+				return source;
+			}
+			
+			/**
+			*	Lấy địa chỉ của ảnh
+			*/
+			function getImageUrl(source){
+				source = source + "";
+				var i = source.lastIndexOf('/');
+				source = source.substr(0, (i + 1));
+				return source;
+			}
+			
+			/**
+			*	Thêm sự kiện showImage(source) khi người dùng di chuột qua một tag
+			*/
+			function addTagAction(tag){
+				if(tag.addEventListener){
+					tag.addEventListener("click", function (){showImage(tag.src)}, false);
+				}else{
+					if (tag.attachEvent){
+						tag.attachEvent("onclick", function (){showImage(tag.src)});
+					}
+				}
+			}
+			
+			/**
+			*	Khởi tạo một số giá trị khi tải trang
+			*/
+			function init(){
+				var tm = document.getElementsByTagName('img');
+				for(var k = 0; k < tm.length; k++){
+					images[i] = tm[k].src;
+					addTagAction(tm[k]);
+					i += 1;
+				}
+				i = 0;
+			}
+			
+			window.onload = init;
+		</script>
+	</head>
+	<body>
+		<img alt="image" src="IMG_0590.jpg" />
+		<img alt="image" src="IMG_0592.jpg" />
+		<img alt="image" src="IMG_0593.jpg" />
+		<img alt="image" src="IMG_0594.jpg" />
+	</body>
+</html>
